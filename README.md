@@ -1,6 +1,7 @@
 # Codachi
 
 **Code + Tomodachi**
+
 I built Codachi so I'd have a little buddy watching over my Claude Code sessions. Drop a VRoid character in the corner of your screen — she floats above everything, reacts to what your agents are doing, and talks back in whatever personality fits the mood. Electron + Three.js + [@pixiv/three-vrm](https://github.com/pixiv/three-vrm) under the hood.
 
 > Sits bottom-left, always on top, and keeps you company while the AI does its thing.
