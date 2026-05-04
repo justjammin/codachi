@@ -1,0 +1,46 @@
+{
+  "name": "tomodachi",
+  "version": "0.1.0",
+  "description": "tomodachi — VRoid Desktop Pet powered by Claude",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": ["vroid", "vrm", "desktop-pet", "claude", "ai"],
+  "author": "tomodachi",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.5.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.tomodachi.app",
+    "productName": "tomodachi",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "renderer/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "icon": "assets/icon.icns",
+      "target": ["dmg", "zip"]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": ["nsis", "portable"]
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "target": ["AppImage", "deb"]
+    }
+  }
+}

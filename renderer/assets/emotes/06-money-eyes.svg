@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  
+  <text x="13" y="36" font-size="20" font-weight="bold" fill="#222" font-family="Arial">$</text>
+  <text x="46" y="36" font-size="20" font-weight="bold" fill="#222" font-family="Arial">$</text>
+  
+  <path d="M26,52 Q40,64 54,52" stroke="#222" stroke-width="2.5" fill="none" stroke-linecap="round"></path>
+  
+  <path d="M30,54 Q40,62 50,54" fill="white" stroke="none"></path>
+  
+  <ellipse cx="14" cy="46" rx="7" ry="4" fill="#ffb3b3" opacity="0.6"></ellipse>
+  <ellipse cx="66" cy="46" rx="7" ry="4" fill="#ffb3b3" opacity="0.6"></ellipse>
+</svg>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>tomodachi settings</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+      "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js",
+      "@pixiv/three-vrm-animation": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm-animation@3/lib/three-vrm-animation.module.min.js"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body data-theme="glass">
+
+<!-- Invisible drag strip for frameless window -->
+<div id="drag-strip"></div>
+
+<!-- Session sidebar — transparent left strip with per-session glow dots -->
+<div id="session-sidebar"></div>
+
+<!-- Bubble zone — floats above the 200px viewport in the transparent top region -->
+<div id="bubble-zone">
+  <div id="speech-bubble"></div>
+</div>
+
+<!-- Agent tabs (hidden — state communicated via bubbles) -->
+<div id="agents">
+  <div class="add-agent" id="add-agent-btn" title="Spawn agent">＋</div>
+</div>
+
+<!-- 3D Viewport -->
+<div id="viewport">
+  <div id="canvas-container"></div>
+
+  <!-- No model state -->
+  <div id="no-model">
+    <div class="icon">🎭</div>
+    <h2>No VRM model loaded<br/>Drop a <code>.vrm</code> file or click below</h2>
+    <button id="load-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Load VRM Model
+    </button>
+    <input type="file" id="file-input" accept=".vrm"/>
+    <p style="font-size:9px;color:var(--muted);text-align:center;max-width:220px;line-height:1.6;margin-top:4px">
+      Create a free character at <code>vroid.com/studio</code><br/>
+      Export as VRM, then load it here
+    </p>
+  </div>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <span style="font-size:10px;color:var(--muted)">Loading VRM model...</span>
+  </div>
+
+  <!-- Canvas overlay -->
+  <div id="overlay">
+    <!-- Agent name + state HUD -->
+    <div id="agent-hud">
+      <div id="hud-name">—</div>
+      <div id="hud-state">SELECT AGENT</div>
+    </div>
+
+    <!-- State bar pill (bottom center) -->
+    <div id="state-bar">
+      <button class="st-btn" id="btn-idle" title="Idle">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span class="st-tip">Idle</span>
+      </button>
+      <button class="st-btn" id="btn-typing" title="Typing">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/></svg>
+        <span class="st-tip">Typing</span>
+      </button>
+      <button class="st-btn" id="btn-reading" title="Reading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="st-tip">Reading</span>
+      </button>
+      <button class="st-btn" id="btn-running" title="Running">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span class="st-tip">Running</span>
+      </button>
+      <button class="st-btn" id="btn-waiting" title="Waiting">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span class="st-tip">Waiting</span>
+      </button>
+      <button class="st-btn" id="btn-error" title="Error">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+        <span class="st-tip">Error</span>
+      </button>
+      <button class="st-btn" id="btn-done" title="Done">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="st-tip">Done</span>
+      </button>
+      <button class="st-btn" id="btn-alert" title="Alert">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <span class="st-tip">Alert</span>
+      </button>
+      <div class="st-sep"></div>
+      <button class="st-btn" id="btn-chat" title="Chat">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="st-tip">Chat</span>
+      </button>
+      <button class="st-btn" id="btn-settings" title="Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span class="st-tip">Settings</span>
+      </button>
+    </div>
+
+    <!-- Chat popover -->
+    <div id="chat-popover">
+      <div class="chat-hdr">
+        <span class="chat-hdr-title">CHAT WITH AGENT</span>
+        <button class="chat-x" id="chat-close">×</button>
+      </div>
+      <div class="chat-history" id="chat-history"></div>
+      <div class="chat-row">
+        <input class="chat-in" id="chat-input" placeholder="Message…" autocomplete="off"/>
+        <button class="chat-send" id="chat-send">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Hidden file inputs -->
+<input type="file" id="bg-input"   accept="image/*" multiple style="display:none">
+<input type="file" id="vrma-input" accept=".vrma"           style="display:none">
+
+<!-- Settings drawer -->
+<div id="settings-backdrop"></div>
+<div id="settings-drawer">
+  <div id="settings-hdr">
+    <span>SETTINGS</span>
+  </div>
+  <div id="settings-body">
+    <div class="s-section">
+      <div class="s-section-title">THEME</div>
+      <div id="theme-dots">
+        <div class="theme-option">
+          <button class="theme-dot active" data-theme="glass"    style="background:linear-gradient(135deg,#0d0d18 50%,#7eb8ff)"></button>
+          <span class="theme-label">Glass</span>
+        </div>
+        <div class="theme-option">
+          <button class="theme-dot"        data-theme="cute"     style="background:linear-gradient(135deg,#fdf0f8 50%,#d966c0)"></button>
+          <span class="theme-label">Cute</span>
+        </div>
+        <div class="theme-option">
+          <button class="theme-dot"        data-theme="terminal" style="background:linear-gradient(135deg,#0a0f0a 50%,#00e060)"></button>
+          <span class="theme-label">Terminal</span>
+        </div>
+        <div class="theme-option">
+          <button class="theme-dot"        data-theme="airy"     style="background:linear-gradient(135deg,#f9f7f4 50%,#8c7355)"></button>
+          <span class="theme-label">Airy</span>
+        </div>
+      </div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">PERSONALITY</div>
+      <div id="personality-btns">
+        <button class="p-btn active" data-personality="kawaii">🌸 Kawaii</button>
+        <button class="p-btn" data-personality="tsundere">😏 Tsundere</button>
+        <button class="p-btn" data-personality="scholar">🧠 Scholar</button>
+        <button class="p-btn" data-personality="cozy">🌙 Cozy</button>
+        <button class="p-btn" data-personality="hype">⚡ Hype</button>
+      </div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">SIMULATION</div>
+      <div class="s-row">
+        <span class="s-row-label">Auto cycle states</span>
+        <div id="sim-toggle" style="pointer-events:all">
+          <div class="toggle-track" id="toggle-track"><div class="toggle-thumb"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">ANIMATION PER STATE</div>
+      <div id="vrma-rows"></div>
+    </div>
+    <div class="s-section">
+      <div class="s-section-title">BACKGROUND (active agent)</div>
+      <div id="bg-btn-row">
+        <button class="bg-act" id="btn-bg-add">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>Add
+        </button>
+        <button class="bg-act" id="btn-bg-prev">←</button>
+        <button class="bg-act" id="btn-bg-next">→</button>
+        <button class="bg-act" id="btn-bg-clear">Clear</button>
+      </div>
+      <div id="bg-thumbnails"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
