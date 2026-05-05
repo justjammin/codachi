@@ -21,9 +21,10 @@ const DEFAULT_CONFIG = {
     waiting: null, error: null, done: null, alert: null,
   },
   hotkeys: {
-    togglePet:    'CommandOrControl+Shift+P',
-    triggerWave:  'CommandOrControl+Shift+W',
-    triggerSleep: 'CommandOrControl+Shift+S',
+    togglePet:         'CommandOrControl+Shift+P',
+    triggerWave:       'CommandOrControl+Shift+W',
+    triggerSleep:      'CommandOrControl+Shift+S',
+    toggleClickThrough: 'CommandOrControl+Shift+T',
   },
 };
 

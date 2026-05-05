@@ -1,7 +1,7 @@
 const { app } = require('electron');
 const appState = require('./state');
 const { loadConfig } = require('./config');
-const { createPetWindow } = require('./windows');
+const { createPetWindow, createSetupWindow } = require('./windows');
 const { createTray } = require('./tray');
 const { registerHotkeys, registerIpc } = require('./ipc');
 const transcriptWatcher = require('./transcript-watcher');
@@ -20,6 +20,11 @@ if (!app.requestSingleInstanceLock()) {
     createPetWindow();
     createTray();
     registerHotkeys();
+
+    if (!appState.config.vrmPath) {
+      appState.petWindow.hide();
+      createSetupWindow();
+    }
 
     transcriptWatcher.on('session-update', (data) => {
       appState.petWindow?.webContents.send('session-update', data);

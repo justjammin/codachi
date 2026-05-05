@@ -1,5 +1,61 @@
 import { state } from '../state.js';
 
+export function setVideoBackground(file) {
+  const video = document.getElementById('bg-video');
+  if (!video) return;
+  if (video._objectUrl) URL.revokeObjectURL(video._objectUrl);
+
+  const vp = document.getElementById('viewport');
+  if (file.name.toLowerCase().endsWith('.gif')) {
+    const url = URL.createObjectURL(file);
+    video._objectUrl = url;
+    video.classList.remove('active');
+    vp.style.backgroundImage = `url('${url}')`;
+    vp.style.backgroundSize = 'cover';
+    vp.style.backgroundPosition = 'center';
+  } else {
+    const url = URL.createObjectURL(file);
+    video._objectUrl = url;
+    video.src = url;
+    video.classList.add('active');
+    vp.style.backgroundImage = '';
+    vp.style.backgroundSize = '';
+    vp.style.backgroundPosition = '';
+  }
+}
+
+export function loadVideoFromPath(filePath) {
+  if (!filePath) { clearVideoBackground(); return; }
+  const video = document.getElementById('bg-video');
+  if (!video) return;
+  const vp = document.getElementById('viewport');
+  const normalised = filePath.replace(/\\/g, '/');
+  if (filePath.toLowerCase().endsWith('.gif')) {
+    video.classList.remove('active');
+    vp.style.backgroundImage = `url('file://${normalised}')`;
+    vp.style.backgroundSize = 'cover';
+    vp.style.backgroundPosition = 'center';
+  } else {
+    video.src = `file://${normalised}`;
+    video.classList.add('active');
+    vp.style.backgroundImage = '';
+    vp.style.backgroundSize = '';
+    vp.style.backgroundPosition = '';
+  }
+}
+
+export function clearVideoBackground() {
+  const video = document.getElementById('bg-video');
+  if (!video) return;
+  if (video._objectUrl) { URL.revokeObjectURL(video._objectUrl); video._objectUrl = null; }
+  video.src = '';
+  video.classList.remove('active');
+  const vp = document.getElementById('viewport');
+  vp.style.backgroundImage = '';
+  vp.style.backgroundSize = '';
+  vp.style.backgroundPosition = '';
+}
+
 export function updateViewportBg(agent) {
   const vp = document.getElementById('viewport');
   vp.style.backgroundImage = agent?.backgrounds?.length

@@ -34,6 +34,22 @@ contextBridge.exposeInMainWorld('anibuddy', {
   /** Open the settings popup window */
   openSettings: () => ipcRenderer.invoke('window:openSettings'),
 
+  // ── Drag ─────────────────────────────────────────────────────────────────
+  dragStart:     (x, y)    => ipcRenderer.send('window:dragStart', { x, y }),
+  dragMove:      (x, y)    => ipcRenderer.send('window:dragMove',  { x, y }),
+  dragEnd:       (wasDrag) => ipcRenderer.send('window:dragEnd',   { wasDrag }),
+
+  // ── Setup ─────────────────────────────────────────────────────────────────
+  setupComplete: (vrmPath) => ipcRenderer.invoke('setup:complete', { vrmPath }),
+
+  // ── Video background (terminal theme) ────────────────────────────────────
+  pickVideoBg:  () => ipcRenderer.invoke('video:pick'),
+  clearVideoBg: () => ipcRenderer.invoke('video:clearbg'),
+  onVideoBg: (cb) => {
+    ipcRenderer.on('video:bg', (_, path) => cb(path));
+    return () => ipcRenderer.removeAllListeners('video:bg');
+  },
+
   // ── Navigation messages from tray ────────────────────────────────────────
   /** Subscribe to navigation commands sent from the tray menu */
   onNavigate: (callback) => {
@@ -69,6 +85,12 @@ contextBridge.exposeInMainWorld('anibuddy', {
   onSessionEnd: (callback) => {
     ipcRenderer.on('session-end', (_, data) => callback(data));
     return () => ipcRenderer.removeAllListeners('session-end');
+  },
+
+  // ── VRM load path from main ───────────────────────────────────────────────
+  onVrmLoadPath: (cb) => {
+    ipcRenderer.on('vrm:loadPath', (_, p) => cb(p));
+    return () => ipcRenderer.removeAllListeners('vrm:loadPath');
   },
 
   // ── Platform info ─────────────────────────────────────────────────────────

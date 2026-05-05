@@ -2,7 +2,7 @@ import { state, vrmaMap, MOCK_EVENTS, LOOP_STATES, PERSONALITIES } from '../stat
 import { loadVRM, loadVRMAFromUrl } from '../scene.js';
 import { showSpeech, showEmote } from './speech.js';
 import { renderAgentTabs, setActiveAgent, setAgentState, addLog, spawnAgent } from './agents.js';
-import { updateViewportBg, renderBgThumbnails } from './background.js';
+import { updateViewportBg, renderBgThumbnails, clearVideoBackground } from './background.js';
 import { openSettings, closeSettings, buildVRMARows, saveMappingToExtension } from './settings.js';
 import { startSim, stopSim } from './sim.js';
 
@@ -47,7 +47,10 @@ export function init() {
   });
 
   // Settings drawer
-  document.getElementById('btn-settings')?.addEventListener('click', openSettings);
+  document.getElementById('btn-settings')?.addEventListener('click', () => {
+    if (window.anibuddy?.openSettings) window.anibuddy.openSettings();
+    else openSettings(); // fallback for non-Electron
+  });
   document.getElementById('settings-backdrop')?.addEventListener('click', closeSettings);
 
   // Personality selector
@@ -141,6 +144,22 @@ export function init() {
     updateViewportBg(agent);
   });
 
+  // Terminal video/GIF background
+  document.getElementById('btn-video-add')?.addEventListener('click', async () => {
+    if (window.anibuddy?.pickVideoBg) {
+      await window.anibuddy.pickVideoBg();
+      // pet window receives video:bg event via IPC; nothing to do in settings window
+    }
+  });
+
+  document.getElementById('btn-video-clear')?.addEventListener('click', () => {
+    if (window.anibuddy?.clearVideoBg) {
+      window.anibuddy.clearVideoBg();
+    } else {
+      clearVideoBackground();
+    }
+  });
+
   // VRMA upload
   document.getElementById('vrma-input').addEventListener('change', e => {
     const file = e.target.files[0];
@@ -161,6 +180,40 @@ export function init() {
       state.simActive = !state.simActive;
       document.getElementById('toggle-track').classList.toggle('on', state.simActive);
       if (state.simActive) startSim(); else stopSim();
+    });
+  }
+
+  // Right-click drag to move window
+  if (window.anibuddy?.dragStart) {
+    let _dragActive = false;
+    let _dragMoved  = false;
+    let _dragOrigin = null;
+
+    document.addEventListener('mousedown', (e) => {
+      if (e.button !== 2) return;
+      _dragActive = true;
+      _dragMoved  = false;
+      _dragOrigin = { x: e.screenX, y: e.screenY };
+      window.anibuddy.dragStart(e.screenX, e.screenY);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!_dragActive || !_dragOrigin) return;
+      const dx = Math.abs(e.screenX - _dragOrigin.x);
+      const dy = Math.abs(e.screenY - _dragOrigin.y);
+      if (dx > 4 || dy > 4) {
+        _dragMoved = true;
+        window.anibuddy.dragMove(e.screenX, e.screenY);
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (e.button !== 2) return;
+      const wasDrag = _dragMoved;
+      _dragActive = false;
+      _dragMoved  = false;
+      _dragOrigin = null;
+      window.anibuddy.dragEnd(wasDrag);
     });
   }
 }

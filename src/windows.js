@@ -3,6 +3,10 @@ const path = require('path');
 const appState = require('./state');
 const { saveConfig } = require('./config');
 
+function getRebuildTray() {
+  return require('./tray').rebuildTray;
+}
+
 const WIN_W = 220, WIN_H = 280;
 
 function createPetWindow() {
@@ -42,18 +46,24 @@ function createPetWindow() {
   appState.petWindow.on('closed', () => { appState.petWindow = null; });
 
   appState.petWindow.webContents.on('context-menu', () => {
+    if (appState._lastDragWas) {
+      appState._lastDragWas = false;
+      return;
+    }
     Menu.buildFromTemplate([
       { label: 'Settings…', click: createSettingsWindow },
       { label: 'Always on Top', type: 'checkbox', checked: appState.config.alwaysOnTop, click: (item) => {
         appState.config.alwaysOnTop = item.checked;
         saveConfig(appState.config);
         appState.petWindow?.setAlwaysOnTop(item.checked);
+        getRebuildTray()();
       }},
       { label: 'Click-Through', type: 'checkbox', checked: appState.isClickThrough, click: (item) => {
         appState.isClickThrough = item.checked;
         appState.config.clickThrough = appState.isClickThrough;
         saveConfig(appState.config);
         appState.petWindow?.setIgnoreMouseEvents(appState.isClickThrough, { forward: true });
+        getRebuildTray()();
       }},
       { type: 'separator' },
       { label: 'Quit tomodachi', click: () => require('electron').app.quit() },
@@ -84,4 +94,30 @@ function createSettingsWindow() {
   appState.settingsWindow.on('closed', () => { appState.settingsWindow = null; });
 }
 
-module.exports = { createPetWindow, createSettingsWindow, WIN_W, WIN_H };
+function createSetupWindow() {
+  if (appState.setupWindow) { appState.setupWindow.focus(); return; }
+
+  const { workArea } = screen.getPrimaryDisplay();
+  appState.setupWindow = new BrowserWindow({
+    width: 560,
+    height: 420,
+    x: Math.round(workArea.x + (workArea.width - 560) / 2),
+    y: Math.round(workArea.y + (workArea.height - 420) / 2),
+    title: 'tomodachi — Load Your VRM Model',
+    frame: true,
+    resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  appState.setupWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'), {
+    hash: 'setup',
+  });
+
+  appState.setupWindow.on('closed', () => { appState.setupWindow = null; });
+}
+
+module.exports = { createPetWindow, createSettingsWindow, createSetupWindow, WIN_W, WIN_H };

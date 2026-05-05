@@ -104,14 +104,31 @@ Swap it in the Settings drawer whenever the vibe needs to change.
 
 ## Themes
 
-Four options in Settings:
+Four options in Settings. Each theme changes the UI palette, fonts, and the live background behind the character.
 
-| Theme | Look |
-|---|---|
-| Glass | Dark blue, frosted glass |
-| Cute | Soft pink, pastel |
-| Terminal | Dark green, scanline |
-| Airy | Warm off-white |
+### Glass
+Dark-blue frosted panel. Whatever is on your desktop bleeds through as a blurred, slightly saturated surface. Best with a colorful desktop wallpaper.
+
+### Cute
+Soft pink base with three pastel orbs (pink, lavender, rose) that drift independently across. Each orb follows its own path with a slow-floating ambient light.
+
+### Terminal
+Dark scanline grid with a phosphor-green palette. The background slot accepts a **looping video or GIF** — load a `.mp4`, `.webm`, or `.gif` from Settings (Matrix rain, CRT noise, etc). The file path persists between launches and reloads automatically on startup. Without a file loaded the dark scanline pattern shows.
+
+### Airy
+Warm off-white with a golden shimmer that sweeps across the viewport on a slow loop — a wide light band (110° angle) sliding through. Earth-toned accents.
+
+---
+
+### Background at a glance
+
+| Theme | Background type | User upload |
+|---|---|---|
+| Glass | Frosted `backdrop-filter` blur | — |
+| Cute | Animated CSS orbs (`@property`) | — |
+| Terminal | Looping video / GIF | `.mp4` `.webm` `.gif` |
+| Airy | CSS shimmer sweep | — |
+| Default (dark) | Static image slideshow (up to 8) | `.jpg` `.png` `.webp` etc |
 
 ---
 

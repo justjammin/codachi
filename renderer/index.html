@@ -36,6 +36,8 @@
 
 <!-- 3D Viewport -->
 <div id="viewport">
+  <div id="bg-anim-layer" aria-hidden="true"></div>
+  <video id="bg-video" autoplay muted loop playsinline></video>
   <div id="canvas-container"></div>
 
   <!-- No model state -->
@@ -131,7 +133,7 @@
 
 <!-- Hidden file inputs -->
 <input type="file" id="bg-input"   accept="image/*" multiple style="display:none">
-<input type="file" id="vrma-input" accept=".vrma"           style="display:none">
+<input type="file" id="vrma-input" accept=".vrma"          style="display:none">
 
 <!-- Settings drawer -->
 <div id="settings-backdrop"></div>
@@ -186,6 +188,10 @@
     </div>
     <div class="s-section">
       <div class="s-section-title">BACKGROUND (active agent)</div>
+      <div id="bg-video-row" class="bg-btn-row-terminal">
+        <button class="bg-act" id="btn-video-add">&#9654; Load Video/GIF</button>
+        <button class="bg-act" id="btn-video-clear">Clear</button>
+      </div>
       <div id="bg-btn-row">
         <button class="bg-act" id="btn-bg-add">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>Add

@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;700&family=Nunito:wght@400;600;700;900&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;600&display=swap');
 
+@property --o1x { syntax: '<percentage>'; initial-value: 20%; inherits: false; }
+@property --o1y { syntax: '<percentage>'; initial-value: 70%; inherits: false; }
+@property --o2x { syntax: '<percentage>'; initial-value: 80%; inherits: false; }
+@property --o2y { syntax: '<percentage>'; initial-value: 30%; inherits: false; }
+@property --o3x { syntax: '<percentage>'; initial-value: 50%; inherits: false; }
+@property --o3y { syntax: '<percentage>'; initial-value: 50%; inherits: false; }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ── Root vars (default = dark/purple) ───────────────────────────────── */
@@ -9,7 +16,7 @@
   --border:        rgba(148, 163, 184, 0.1);
   --accent:        #a78bfa;
   --text:          #e2e8f0;
-  --muted:         rgba(255,255,255,0.38);
+  --muted:         rgba(255,255,255,0.85);
   --mono:          'Fira Code', monospace;
   --sans:          'Fira Sans', sans-serif;
   --bubble-bg:     rgba(15, 10, 40, 0.88);
@@ -29,7 +36,7 @@ body[data-theme="glass"] {
   --border:        rgba(120, 160, 255, 0.15);
   --accent:        #7eb8ff;
   --text:          #e8eeff;
-  --muted:         rgba(180,200,255,0.38);
+  --muted:         rgba(180,200,255,0.85)
   --bubble-bg:     rgba(20, 30, 60, 0.82);
   --bubble-border: rgba(126, 184, 255, 0.35);
   --bubble-text:   #e8eeff;
@@ -47,7 +54,7 @@ body[data-theme="cute"] {
   --border:        rgba(220, 150, 220, 0.25);
   --accent:        #d966c0;
   --text:          #3a2040;
-  --muted:         rgba(80, 40, 80, 0.45);
+  --muted:         rgba(80, 40, 80, 0.85);
   --bubble-bg:     rgba(255, 248, 254, 0.96);
   --bubble-border: #e8a0d8;
   --bubble-text:   #3a2040;
@@ -65,7 +72,7 @@ body[data-theme="terminal"] {
   --border:        rgba(0, 200, 80, 0.2);
   --accent:        #00e060;
   --text:          #b0ffb0;
-  --muted:         rgba(0, 200, 80, 0.48);
+  --muted:         rgba(0, 200, 80, 0.85);
   --bubble-bg:     rgba(0, 20, 0, 0.95);
   --bubble-border: rgba(0, 200, 80, 0.45);
   --bubble-text:   #b0ffb0;
@@ -83,7 +90,7 @@ body[data-theme="airy"] {
   --border:        rgba(190, 180, 165, 0.28);
   --accent:        #8c7355;
   --text:          #2a2520;
-  --muted:         rgba(42, 37, 32, 0.42);
+  --muted:         rgba(42, 37, 32, 0.85);
   --bubble-bg:     rgba(255, 254, 251, 0.96);
   --bubble-border: rgba(190, 180, 165, 0.5);
   --bubble-text:   #2a2520;
@@ -229,37 +236,140 @@ body {
   background-size: 36px 36px;
 }
 
+/* ── Glass theme ─────────────────────────────────────────────────────── */
 body[data-theme="glass"] #viewport {
-  background:
-    radial-gradient(ellipse at 20% 50%, rgba(80,60,180,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 20%, rgba(60,120,255,0.14) 0%, transparent 50%),
-    linear-gradient(rgba(126,184,255,0.03) 1px, transparent 1px) 0 0 / 30px 30px,
-    linear-gradient(90deg, rgba(126,184,255,0.03) 1px, transparent 1px) 0 0 / 30px 30px,
-    #0d0d18;
+  background: transparent;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border-radius: 20px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 16px, black 100%);
+  mask-image: linear-gradient(to bottom, transparent 0px, black 16px, black 100%);
 }
-body[data-theme="cute"] #viewport {
-  background:
-    radial-gradient(ellipse at 25% 25%, rgba(220,130,220,0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 80%, rgba(150,100,220,0.12) 0%, transparent 50%),
-    radial-gradient(circle, rgba(232,176,232,0.35) 1px, transparent 1px) 0 0 / 28px 28px,
-    #fdf0f8;
-}
-body[data-theme="terminal"] #viewport {
-  background:
-    repeating-linear-gradient(0deg,
-      rgba(0,200,80,0.04), rgba(0,200,80,0.04) 1px,
-      transparent 1px, transparent 20px),
-    #0a0f0a;
-}
-body[data-theme="airy"] #viewport {
-  background:
-    radial-gradient(ellipse at 30% 80%, rgba(255,180,80,0.14) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 20%, rgba(140,115,85,0.08) 0%, transparent 50%),
-    #f9f7f4;
+body[data-theme="glass"] #viewport::before {
+  display: none;
 }
 
-#canvas-container { width: 100%; height: 100%; }
+/* ── Cute theme — animated pastel orbs ──────────────────────────────── */
+body[data-theme="cute"] #viewport {
+  background: #fdf0f8;
+  overflow: hidden;
+}
+body[data-theme="cute"] #viewport::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(220,130,220,0.35) 0%, transparent 45%),
+    radial-gradient(circle at 70% 65%, rgba(180,120,240,0.25) 0%, transparent 40%),
+    radial-gradient(circle at 55% 20%, rgba(255,160,200,0.2) 0%, transparent 35%);
+}
+
+/* ── Airy theme — warm shimmer sweep ────────────────────────────────── */
+body[data-theme="airy"] #viewport {
+  background: #f9f7f4;
+  overflow: hidden;
+}
+body[data-theme="airy"] #viewport::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255,200,100,0.18) 45%,
+    rgba(255,230,150,0.22) 50%,
+    rgba(255,200,100,0.18) 55%,
+    transparent 70%
+  );
+}
+@keyframes airy-shimmer {
+  0%   { transform: translateX(-60%) rotate(-5deg); }
+  100% { transform: translateX(60%) rotate(-5deg); }
+}
+
+/* ── Animated background layer (real DOM element — bypasses WebGL compositor issue) ── */
+#bg-anim-layer {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none; display: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+body[data-theme="cute"] #bg-anim-layer {
+  display: block;
+  background:
+    radial-gradient(circle at var(--o1x) var(--o1y), rgba(220,130,220,0.65) 0%, transparent 42%),
+    radial-gradient(circle at var(--o2x) var(--o2y), rgba(180,120,240,0.55) 0%, transparent 38%),
+    radial-gradient(circle at var(--o3x) var(--o3y), rgba(255,160,200,0.50) 0%, transparent 35%);
+  animation: cute-o1 7s ease-in-out infinite alternate,
+             cute-o2 5.5s ease-in-out infinite alternate,
+             cute-o3 9s ease-in-out infinite alternate;
+}
+@keyframes cute-o1 { 0% { --o1x: 20%; --o1y: 70%; } 100% { --o1x: 78%; --o1y: 18%; } }
+@keyframes cute-o2 { 0% { --o2x: 80%; --o2y: 25%; } 100% { --o2x: 22%; --o2y: 82%; } }
+@keyframes cute-o3 { 0% { --o3x: 55%; --o3y: 55%; } 100% { --o3x: 12%; --o3y: 12%; } }
+body[data-theme="airy"] #bg-anim-layer {
+  display: block;
+  position: absolute;
+  inset: -20%;
+  border-radius: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255,200,100,0.25) 45%,
+    rgba(255,230,150,0.30) 50%,
+    rgba(255,200,100,0.25) 55%,
+    transparent 70%
+  );
+  animation: airy-shimmer 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme="cute"] #bg-anim-layer,
+  body[data-theme="airy"] #bg-anim-layer { animation: none; }
+}
+
+/* ── Terminal theme — video/GIF layer + scanline overlay ─────────────── */
+body[data-theme="terminal"] #viewport {
+  background: #0a0f0a;
+}
+body[data-theme="terminal"] #viewport::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,200,80,0.03), rgba(0,200,80,0.03) 1px,
+    transparent 1px, transparent 3px
+  );
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme="cute"] #viewport::before,
+  body[data-theme="airy"] #viewport::before { animation: none; }
+}
+
+/* ── Video background layer ──────────────────────────────────────────── */
+#bg-video {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; z-index: 1;
+  display: none;
+}
+#bg-video.active { display: block; }
+
+/* ── Canvas must stay on top of video ───────────────────────────────── */
+#canvas-container { width: 100%; height: 100%; position: relative; z-index: 3; }
 canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* ── Terminal-specific UI controls ──────────────────────────────────── */
+.bg-btn-row-terminal { display: none; }
+body[data-theme="terminal"] .bg-btn-row-terminal { display: flex; gap: 5px; margin-bottom: 10px; }
+body[data-theme="terminal"] #bg-btn-row { display: none; }
+body[data-theme="terminal"] #bg-thumbnails { display: none; }
+
+/* ── Hide image upload controls for non-image themes ────────────────── */
+body[data-theme="glass"] #bg-btn-row,
+body[data-theme="glass"] #bg-thumbnails,
+body[data-theme="cute"] #bg-btn-row,
+body[data-theme="cute"] #bg-thumbnails,
+body[data-theme="airy"] #bg-btn-row,
+body[data-theme="airy"] #bg-thumbnails { display: none !important; }
 
 
 /* ── Overlay ──────────────────────────────────────────────────────────── */
@@ -490,7 +600,7 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
   flex-shrink: 0;
 }
 #settings-hdr span {
-  font-size: 9px; letter-spacing: .18em; color: var(--muted);
+  font-size: 11px; letter-spacing: .15em; color: var(--muted);
   font-family: var(--mono); font-weight: 600;
 }
 
@@ -503,19 +613,19 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
   border-bottom: 1px solid var(--border);
 }
 .s-section-title {
-  font-size: 8px; letter-spacing: .18em; color: var(--muted);
+  font-size: 10px; letter-spacing: .15em; color: var(--muted);
   margin-bottom: 12px; font-family: var(--mono); font-weight: 600;
 }
 .s-row {
   display: flex; align-items: center; justify-content: space-between;
 }
-.s-row-label { font-size: 11px; color: var(--text); font-family: var(--font-ui); }
+.s-row-label { font-size: 13px; font-weight: 500; color: var(--text); font-family: var(--font-ui); }
 
 /* Theme dots */
 #theme-dots { display: flex; gap: 14px; flex-wrap: wrap; }
 .theme-option { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .theme-label {
-  font-size: 9px; letter-spacing: .07em; text-transform: uppercase;
+  font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
   color: var(--muted); font-family: var(--font-ui); pointer-events: none;
 }
 .theme-dot {
@@ -539,7 +649,7 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
   background: color-mix(in srgb, var(--text) 5%, transparent);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) / 1.5);
-  color: var(--muted); font-size: 11px; font-family: var(--font-ui);
+  color: var(--muted); font-size: 13px; font-family: var(--font-ui);
   cursor: pointer; text-align: left;
   transition: background .15s, color .15s, border-color .15s;
 }
@@ -554,7 +664,7 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
 /* VRMA rows */
 .vrma-row { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
 .vrma-lbl {
-  font-size: 9px; color: var(--text); flex-shrink: 0; width: 66px;
+  font-size: 11px; font-weight: 500; color: var(--text); flex-shrink: 0; width: 72px;
   display: flex; align-items: center; gap: 4px;
   overflow: hidden; font-family: var(--font-ui);
 }
@@ -562,7 +672,7 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
   flex: 1; min-width: 0;
   background: color-mix(in srgb, var(--text) 5%, transparent);
   border: 1px solid var(--border);
-  color: var(--text); font-family: var(--mono); font-size: 9px;
+  color: var(--text); font-family: var(--mono); font-size: 11px;
   border-radius: calc(var(--radius) / 2); padding: 4px 6px;
   cursor: pointer; outline: none; transition: border-color .15s;
 }
@@ -572,7 +682,7 @@ body[data-theme="airy"]     #speech-bubble { background: rgba(30, 22, 12, 0.66);
 /* Background controls */
 #bg-btn-row { display: flex; gap: 5px; margin-bottom: 10px; }
 .bg-act {
-  flex: 1; font-family: var(--mono); font-size: 8px; padding: 6px 0;
+  flex: 1; font-family: var(--mono); font-size: 10px; padding: 6px 0;
   background: color-mix(in srgb, var(--text) 4%, transparent);
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) / 2);
@@ -634,4 +744,84 @@ body.settings-mode #settings-drawer {
   .spinner { animation: none; border-color: var(--accent); }
   .log-entry.fresh { transition: none; }
 * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* ── Settings popup mode (#settings hash) ── */
+body.settings-mode #drag-strip,
+body.settings-mode #session-sidebar,
+body.settings-mode #bubble-zone,
+body.settings-mode #agents,
+body.settings-mode #viewport,
+body.settings-mode #overlay {
+  display: none !important;
+}
+
+body.settings-mode #settings-backdrop {
+  display: none !important;
+}
+
+body.settings-mode #settings-drawer {
+  position: static !important;
+  transform: none !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+}
+
+/* ── Setup / onboarding mode (#setup hash) ── */
+body.setup-mode #drag-strip,
+body.setup-mode #session-sidebar,
+body.setup-mode #bubble-zone,
+body.setup-mode #agents,
+body.setup-mode #overlay,
+body.setup-mode #settings-backdrop,
+body.setup-mode #settings-drawer {
+  display: none !important;
+}
+
+body.setup-mode #viewport {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--bg, #0d0d18) !important;
+}
+
+body.setup-mode #canvas-container {
+  display: none !important;
+}
+
+body.setup-mode #loading-overlay {
+  display: none !important;
+}
+
+body.setup-mode #no-model {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  padding: 32px !important;
+}
+
+body.setup-mode #no-model .icon {
+  font-size: 48px !important;
+}
+
+body.setup-mode #no-model h2 {
+  font-size: 14px !important;
+  text-align: center !important;
+  line-height: 1.6 !important;
+}
+
+body.setup-mode #no-model #load-btn {
+  padding: 10px 24px !important;
+  font-size: 13px !important;
 }
